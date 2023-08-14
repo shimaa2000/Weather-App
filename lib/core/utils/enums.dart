@@ -1,10 +1,12 @@
-enum RequestState{
+enum RequestState {
+  initial,
   loading,
   loaded,
   error,
+  disconnected,
 }
 
-enum NetworkState{
+enum NetworkState {
   connected,
   disconnected,
 }

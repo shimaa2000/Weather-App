@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/weather/presentation/screens/search_screen.dart';
+
+import '../../../core/constants/app_images.dart';
+import 'current_weather_widget.dart';
 
 class SliverHeaderDelegateComponent extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
@@ -6,9 +10,10 @@ class SliverHeaderDelegateComponent extends SliverPersistentHeaderDelegate {
   const SliverHeaderDelegateComponent({required this.expandedHeight});
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     final deadline = (expandedHeight + minExtent);
+    final width = MediaQuery.sizeOf(context).width;
+    final height = MediaQuery.sizeOf(context).height;
     double percent = shrinkOffset > deadline ? 1 : shrinkOffset / deadline;
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) => SizedBox(
@@ -16,12 +21,37 @@ class SliverHeaderDelegateComponent extends SliverPersistentHeaderDelegate {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            if(shrinkOffset > expandedHeight + minExtent) // show it on collapse
-                 Container(
-                height: 200,
-                width: double.infinity,
-                color: Colors.red,child: const Center(child: Text('Weather data'))),
-
+            if (shrinkOffset > expandedHeight + minExtent) // show it on collapse
+              Container(
+                  height: height / 5,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    fit: BoxFit.fitWidth,
+                    image: AssetImage(
+                      AppImages.backgroundImage,
+                    ),
+                  )),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Shebin El-Kom',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: width * .05,
+                        ),
+                      ),
+                      Text(
+                        '26 \u2103 | Rain',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: width * .03,
+                        ),
+                      ),
+                    ],
+                  )),
             PositionedDirectional(
               start: 0.0,
               end: 0.0,
@@ -29,16 +59,29 @@ class SliverHeaderDelegateComponent extends SliverPersistentHeaderDelegate {
               bottom: 0,
               child: Opacity(
                 opacity: 1 - percent,
-                child: SizedBox(
-                  height: 300,
+                child: Container(
+                  height: MediaQuery.sizeOf(context).height / 4,
+                  color: Colors.transparent,
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 30 * percent),
-                    child: const Card(
-                      elevation: 20.0,
-                      child: Center(
-                        child: Text("Weather data"),
-                      ),
+                    child: const Center(
+                      child: CurrentWeatherWidget(),
                     ),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>const SearchScreen(),
                   ),
                 ),
               ),

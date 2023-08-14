@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/weather/presentation/components/day_weather.dart';
+
+import '../../../core/constants/app_images.dart';
 import '../components/fade_on_scrolling_widget.dart';
 
 class CurrentWeatherScreen extends StatelessWidget {
@@ -8,32 +11,28 @@ class CurrentWeatherScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.blue,
-      
-        body: SafeArea(
+    final height = MediaQuery.sizeOf(context).height;
+    return Scaffold(
+      body: Container(
+        height: height,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+          fit: BoxFit.fill,
+          image: AssetImage(
+            AppImages.backgroundImage,
+          ),
+        )),
+        child: SafeArea(
           child: CustomScrollView(
             controller: scrollController,
             slivers: [
-              const SliverPersistentHeader(
+              SliverPersistentHeader(
                 pinned: true,
-                delegate: SliverHeaderDelegateComponent(expandedHeight: 200),
+                delegate: SliverHeaderDelegateComponent(expandedHeight: height / 5),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(childCount: 5, (BuildContext context, int index) {
-                  return  Container(
-                    height: 200,
-                    color: Colors.transparent,
-                    child:  Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30 ),
-                        child:  Card(
-                          elevation: 20.0,
-                          child: Center(
-                            child: Text("Weather $index"),
-                          ),
-                        ),),
-                  );
+                  return const DayWeather();
                 }),
               )
             ],
