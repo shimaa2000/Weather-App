@@ -63,24 +63,27 @@ class WeatherCubit extends Cubit<WeatherState> {
 
 
 
-  Future<void> _getCurrentPosition() async {
+  Future<Position?> _getCurrentPosition() async {
     final hasPermission = await _handleLocationPermission();
-    if (!hasPermission) return;
+    if (!hasPermission) return null;
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       emit(state.copyWith(currentPosition: position));
+      return position;
     }).catchError((e) {
       log(e.toString());
     });
+    return null;
   }
   Future<void> _getAddressFromLatLng() async {
-    _getCurrentPosition();
+    Position? position=await _getCurrentPosition();
+    log('$position');
+
     await placemarkFromCoordinates(
-        state.currentPosition!.latitude, state.currentPosition!.longitude)
+        position!.latitude, position.longitude)
         .then((List<Placemark> placemarks) {
       Placemark place = placemarks[0];
       emit(state.copyWith(currentAddress: place.country));
-
     }).catchError((e) {
       debugPrint(e);
     });
