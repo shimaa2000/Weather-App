@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather_app/core/utils/enums.dart';
@@ -21,52 +20,62 @@ class WeatherCubit extends Cubit<WeatherState> {
 
 
   Future<Position?> _getCurrentPosition() async {
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+    Position position=await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       emit(state.copyWith(currentPosition: position));
+      log(position.toString());
       return position;
     }).catchError((e) {
       log(e.toString());
+      return null;
     });
-    return null;
+    return position;
   }
-  Future<void> _getAddressFromLatLng() async {
+  Future<String?> _getAddressFromLatLng() async {
     Position? position=await _getCurrentPosition();
     log('$position');
 
-    await placemarkFromCoordinates(
+    final placeMarks=await placemarkFromCoordinates(
         position!.latitude, position.longitude)
         .then((List<Placemark> placemarks) {
       Placemark place = placemarks[0];
       emit(state.copyWith(currentAddress: place.country));
+      log('${place.country}');
+      return place.country;
     }).catchError((e) {
       debugPrint(e);
+      return null;
     });
+    return placeMarks;
   }
 
 
   void getTodayWeather({ String? city}) async {
-    _getAddressFromLatLng();
-    emit(state.copyWith(getTodayWeatherState: RequestState.loading));
-    if (await NetworkService().isConnected) {
-      final result = await _weatherByCountryName({
-        'q': city?? state.currentAddress,
-      });
-      result.fold((l) {
-        emit(state.copyWith(
-            getTodayWeatherState: RequestState.error, message: l.message));
-      }, (r) {
-        log(r.pressure.toString());
+    String? address=await _getAddressFromLatLng();
+    log(address!);
+    if(address!=null) {
+      emit(state.copyWith(getTodayWeatherState: RequestState.loading));
+      if (await NetworkService().isConnected) {
+        final result = await _weatherByCountryName({
+          'q': city ?? address,
+        });
+        result.fold((l) {
+          log(l.message);
+          emit(state.copyWith(
+              getTodayWeatherState: RequestState.error, message: l.message));
+        }, (r) {
+          log(r.pressure.toString());
 
-        emit(
-          state.copyWith(
-            weather: r,
-            getTodayWeatherState: RequestState.loaded,
-          ),
-        );
-      });
-    } else {
-      emit(state.copyWith(networkState: NetworkState.disconnected));
+          emit(
+            state.copyWith(
+              weather: r,
+              getTodayWeatherState: RequestState.loaded,
+            ),
+          );
+        });
+      } else {
+        emit(state.copyWith(networkState: NetworkState.disconnected));
+      }
     }
   }
 }
