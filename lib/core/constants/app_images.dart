@@ -1,4 +1,5 @@
 class AppImages {
-  static String backgroundImage =
-      DateTime.now().hour > 16 ? 'assets/images/night.jpg' : 'assets/images/day.jpg';
+  static String backgroundImage = DateTime.now().hour < 18 && DateTime.now().hour > 6
+      ? 'assets/images/day.jpg'
+      : 'assets/images/night.jpg';
 }

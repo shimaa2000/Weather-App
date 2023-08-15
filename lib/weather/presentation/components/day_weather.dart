@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/core/services/local/cash_helper.dart';
+
+import '../../domain/entity/weather.dart';
 
 class DayWeather extends StatelessWidget {
-  const DayWeather({Key? key}) : super(key: key);
+  const DayWeather({Key? key, required this.weather}) : super(key: key);
+  final Weather weather;
 
   @override
   Widget build(BuildContext context) {
-    final height=MediaQuery.sizeOf(context).height;
-    final width=MediaQuery.sizeOf(context).width;
+    final height = MediaQuery.sizeOf(context).height;
+    final width = MediaQuery.sizeOf(context).width;
     return Container(
       height: height / 5.5,
       color: Colors.transparent,
@@ -30,23 +34,26 @@ class DayWeather extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'My Location',
+                        weather.cityName == CashHelper.getData(key: 'city')
+                            ? 'My Location'
+                            : weather.cityName,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: width * .06,
                         ),
                       ),
-                      Text(
-                        'Shebin El-kom',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: width * .045,
+                      if (weather.cityName == CashHelper.getData(key: 'city'))
+                        Text(
+                          weather.cityName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: width * .045,
+                          ),
                         ),
-                      ),
                       const Spacer(),
                       Text(
-                        'moderate rain',
+                        weather.description,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: width * .035,
@@ -59,7 +66,7 @@ class DayWeather extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '26 \u2103',
+                        '${(weather.humidity - 32) * 5 ~/ 9} \u2103',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: width * .08,
@@ -67,7 +74,7 @@ class DayWeather extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        'Rain',
+                        weather.main,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: width * .04,
