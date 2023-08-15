@@ -6,11 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_app/core/services/local/cash_helper.dart';
-import 'package:weather_app/core/utils/enums.dart';
-import 'package:weather_app/weather/domain/entity/weather.dart';
-import 'package:weather_app/weather/domain/use_case/get_weather_by_city_name.dart';
-import 'package:weather_app/weather/domain/use_case/get_weather_for_five_days.dart';
+import '../../../core/services/local/cash_helper.dart';
+import '../../../core/utils/enums.dart';
+import '../../domain/entity/weather.dart';
+import '../../domain/use_case/get_weather_by_city_name.dart';
+import '../../domain/use_case/get_weather_for_five_days.dart';
 
 import '../../../core/network/api_constants.dart';
 import '../../../core/services/network_service.dart';
@@ -70,11 +70,11 @@ class WeatherCubit extends Cubit<WeatherState> {
 
   void getTodayWeather({String? city}) async {
     String? address = CashHelper.getData(key: 'city') ?? await _getAddressFromLatLng();
-    if (address != null) {
+
       emit(state.copyWith(getTodayWeatherState: RequestState.loading));
       if (await NetworkService().isConnected) {
         final result = await _weatherByCountryName({
-          'q': city ?? address,
+          'q': city ?? address??'Cairo',
           'appid': ApiConstants.apiKey,
         });
         result.fold((l) {
@@ -101,16 +101,15 @@ class WeatherCubit extends Cubit<WeatherState> {
       } else {
         emit(state.copyWith(networkState: NetworkState.disconnected));
       }
-    }
   }
 
   void getFiveDaysWeather() async {
     String? address = CashHelper.getData(key: 'city') ?? await _getAddressFromLatLng();
-    if (address != null) {
+
       emit(state.copyWith(fiveDaysWeatherState: RequestState.loading));
       if (await NetworkService().isConnected) {
         final result = await _weatherForFiveDays({
-          'q': address,
+          'q': address??'Cairo',
           'appid': ApiConstants.apiKey,
         });
         result.fold((l) {
@@ -127,6 +126,6 @@ class WeatherCubit extends Cubit<WeatherState> {
       } else {
         emit(state.copyWith(networkState: NetworkState.disconnected));
       }
-    }
+
   }
 }

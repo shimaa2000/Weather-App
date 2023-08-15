@@ -30,7 +30,7 @@ class SliverHeaderDelegateComponent extends SliverPersistentHeaderDelegate {
               children: [
                 if (shrinkOffset > expandedHeight + minExtent) // show it on collapse
                   Container(
-                      height: height / 5,
+                      height: height / 4,
                       width: double.infinity,
                       decoration: BoxDecoration(
                           image: DecorationImage(
@@ -41,45 +41,47 @@ class SliverHeaderDelegateComponent extends SliverPersistentHeaderDelegate {
                       )),
                       child: state.getTodayWeatherState == RequestState.loading
                           ? const CupertinoActivityIndicator()
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  state.weather!.cityName,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: width * .05,
+                          : Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    state.weather!.cityName,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: width * .05,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '${(state.weather!.humidity - 32) * 5~/9} \u2103 | ${state.weather!.main}',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: width * .03,
+                                  Text(
+                                    '${(state.weather!.humidity - 32) * 5 ~/ 9} \u2103 | ${state.weather!.main}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: width * .03,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             )),
                 PositionedDirectional(
                   start: 0.0,
                   end: 0.0,
-                  // top: appBarSize > 0 ? appBarSize : 0,
                   bottom: 0,
                   child: Opacity(
                     opacity: 1 - percent,
-                    child:state.getTodayWeatherState == RequestState.loading
+                    child: state.getTodayWeatherState == RequestState.loading ||
+                            state.getTodayWeatherState == RequestState.initial
                         ? const CupertinoActivityIndicator()
-                        :  Container(
-                      height: MediaQuery.sizeOf(context).height / 4,
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 30 * percent),
-                        child: Center(
-                          child: CurrentWeatherWidget(weather: state.weather!),
-                        ),
-                      ),
-                    ),
+                        : Container(
+                            height: MediaQuery.sizeOf(context).height / 4,
+                            color: Colors.transparent,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 30 * percent),
+                              child: Center(
+                                child: CurrentWeatherWidget(weather: state.weather!),
+                              ),
+                            ),
+                          ),
                   ),
                 ),
                 Align(

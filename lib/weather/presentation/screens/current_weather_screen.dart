@@ -32,18 +32,22 @@ class CurrentWeatherScreen extends StatelessWidget {
           create: (context) => WeatherCubit(sl(), sl())
             ..getTodayWeather()
             ..getFiveDaysWeather(),
-          child: SafeArea(
-            child: CustomScrollView(
-              controller: scrollController,
-              slivers: [
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: SliverHeaderDelegateComponent(expandedHeight: height / 5),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(childCount: 5, (BuildContext context, int index) {
-                    return BlocBuilder<WeatherCubit, WeatherState>(
-                      builder: (context, state) {
+          child: BlocBuilder<WeatherCubit, WeatherState>(
+            buildWhen: (previous, current) =>
+                previous.fiveDaysWeatherState != current.fiveDaysWeatherState,
+            builder: (context, state) {
+              return SafeArea(
+                child: CustomScrollView(
+                  controller: scrollController,
+                  slivers: [
+                    SliverPersistentHeader(
+                      pinned: true,
+                      floating: true,
+                      delegate: SliverHeaderDelegateComponent(expandedHeight: height / 5),
+                    ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(childCount: state.fiveDaysWeather.length,
+                          (BuildContext context, int index) {
                         return state.fiveDaysWeatherState == RequestState.loading
                             ? Padding(
                                 padding: EdgeInsets.symmetric(
@@ -65,12 +69,12 @@ class CurrentWeatherScreen extends StatelessWidget {
                             : DayWeather(
                                 weather: state.fiveDaysWeather[index],
                               );
-                      },
-                    );
-                  }),
-                )
-              ],
-            ),
+                      }),
+                    )
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),
