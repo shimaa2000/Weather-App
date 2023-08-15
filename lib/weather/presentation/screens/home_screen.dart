@@ -4,6 +4,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:weather_app/weather/presentation/screens/current_weather_screen.dart';
 
 import '../../../core/services/network_service.dart';
+import 'no_internet_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
           return LoaderOverlay(
             overlayWidget:const Scaffold(
-              body: Center(child: Text('No internet')),
+              body: NoInternetScreen(),
             ),
             useDefaultLoading: false,
             child: child!,

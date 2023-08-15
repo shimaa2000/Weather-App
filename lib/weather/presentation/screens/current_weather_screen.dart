@@ -44,23 +44,27 @@ class CurrentWeatherScreen extends StatelessWidget {
                   delegate: SliverChildBuilderDelegate(childCount: 5, (BuildContext context, int index) {
                     return BlocBuilder<WeatherCubit, WeatherState>(
                       builder: (context, state) {
-                        return state.fiveDaysWeatherState==RequestState.loading?Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: width * .04,
-                            vertical: height * .01,
-                          ),
-                          child: Shimmer.fromColors(
-                            baseColor: Colors.blueAccent.withOpacity(.3),
-                            highlightColor: Colors.blueAccent.shade700,
-                            child: Container(
-                              height: height / 5.5,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                          ),
-                        ):  DayWeather(weather: state.fiveDaysWeather[index],);
+                        return state.fiveDaysWeatherState == RequestState.loading
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: width * .04,
+                                  vertical: height * .01,
+                                ),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.blueAccent.withOpacity(.3),
+                                  highlightColor: Colors.blueAccent.shade700,
+                                  child: Container(
+                                    height: height / 5.5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : DayWeather(
+                                weather: state.fiveDaysWeather[index],
+                              );
                       },
                     );
                   }),

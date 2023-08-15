@@ -18,14 +18,30 @@ import '../../../core/services/network_service.dart';
 part 'weather_state.dart';
 
 class WeatherCubit extends Cubit<WeatherState> {
-  WeatherCubit(this._weatherByCountryName, this._weatherForFiveDays) : super(const WeatherState());
+  WeatherCubit(this._weatherByCountryName, this._weatherForFiveDays) : super(const WeatherState()) {
+    NetworkService().addListener((status) {
+      if (status.disconnected) {
+        emit(state.copyWith(networkState: NetworkState.disconnected));
+      }
+      if (status.connected) {
+        emit(state.copyWith(networkState: NetworkState.connected));
+        if (searchController.text.isNotEmpty) {
+          getTodayWeather(city: searchController.text);
+        } else {
+          getTodayWeather();
+          getFiveDaysWeather();
+        }
+      }
+    });
+  }
+
   final GetWeatherByCountryName _weatherByCountryName;
   final GetWeatherForFiveDays _weatherForFiveDays;
 
   static WeatherCubit get(context) => BlocProvider.of(context);
 
   Future<Position?> _getCurrentPosition() async {
-   await Geolocator.requestPermission();
+    await Geolocator.requestPermission();
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       emit(state.copyWith(currentPosition: position));
@@ -37,10 +53,6 @@ class WeatherCubit extends Cubit<WeatherState> {
 
   final searchController = TextEditingController();
 
-  changeIcon() {
-    emit(state.copyWith(isEditing: searchController.text.isNotEmpty));
-  }
-
   Future<String?> _getAddressFromLatLng() async {
     Position? position = await _getCurrentPosition();
     log('$position');
@@ -51,7 +63,6 @@ class WeatherCubit extends Cubit<WeatherState> {
       emit(state.copyWith(currentAddress: place.country));
       log('${place.country}');
       CashHelper.saveData(key: 'city', value: placeMarks[0].locality);
-
       return place.locality;
     });
     return placeMarks;
@@ -77,8 +88,9 @@ class WeatherCubit extends Cubit<WeatherState> {
           log(l.message);
           emit(state.copyWith(getTodayWeatherState: RequestState.error, message: l.message));
         }, (r) {
-          log(r.pressure.toString());
-
+          CashHelper.saveData(key: 'main', value: r.main);
+          CashHelper.saveData(key: 'description', value: r.description);
+          CashHelper.saveData(key: 'temp', value: r.humidity);
           emit(
             state.copyWith(
               weather: r,
@@ -105,8 +117,6 @@ class WeatherCubit extends Cubit<WeatherState> {
           log(l.message);
           emit(state.copyWith(fiveDaysWeatherState: RequestState.error, message: l.message));
         }, (r) {
-          log(r[0].pressure.toString());
-
           emit(
             state.copyWith(
               fiveDaysWeather: r,
