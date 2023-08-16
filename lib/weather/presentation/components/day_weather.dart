@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/core/services/local/cash_helper.dart';
 
+import '../../../core/network/api_constants.dart';
 import '../../domain/entity/weather.dart';
 
 class DayWeather extends StatelessWidget {
@@ -21,7 +22,8 @@ class DayWeather extends StatelessWidget {
         ),
         child: Card(
             color: Colors.blueAccent.withOpacity(.45),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             elevation: 20.0,
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -43,14 +45,23 @@ class DayWeather extends StatelessWidget {
                           fontSize: width * .06,
                         ),
                       ),
-                      if (weather.cityName == CashHelper.getData(key: 'city'))
-                        Text(
-                          weather.cityName,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: width * .045,
+                      Row(children: [
+                        if (weather.cityName == CashHelper.getData(key: 'city'))
+                          Text(
+                            weather.cityName,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: width * .045,
+                            ),
                           ),
+                        SizedBox(
+                          height: width*.1,
+                          width: width*.1,
+                          child: Image.network(
+                              ApiConstants.imageUrl(weather.icon)),
                         ),
+                      ],),
+
                       const Spacer(),
                       Text(
                         weather.description,

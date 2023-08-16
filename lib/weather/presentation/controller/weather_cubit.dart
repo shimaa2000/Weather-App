@@ -100,7 +100,9 @@ class WeatherCubit extends Cubit<WeatherState> {
         CashHelper.saveData(key: 'main', value: r.main);
         CashHelper.saveData(key: 'description', value: r.description);
         CashHelper.saveData(key: 'temp', value: r.humidity);
+        log(r.icon);
         emit(
+
           state.copyWith(
             weather: r,
             getTodayWeatherState: RequestState.loaded,
@@ -127,6 +129,7 @@ class WeatherCubit extends Cubit<WeatherState> {
             fiveDaysWeatherState: RequestState.error, message: l.message));
         getFiveDaysWeather(city: 'Cairo');
       }, (r) {
+        log(r[0].icon);
         emit(
           state.copyWith(
             fiveDaysWeather: r,

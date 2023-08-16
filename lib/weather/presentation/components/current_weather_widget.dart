@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/core/network/api_constants.dart';
 import 'package:weather_app/weather/domain/entity/weather.dart';
 
 class CurrentWeatherWidget extends StatelessWidget {
-  const CurrentWeatherWidget({Key? key, required this.weather}) : super(key: key);
+  const CurrentWeatherWidget({Key? key, required this.weather})
+      : super(key: key);
   final Weather weather;
 
   @override
@@ -16,6 +18,11 @@ class CurrentWeatherWidget extends StatelessWidget {
             color: Colors.white,
             fontSize: width * .08,
           ),
+        ),
+        SizedBox(
+          height: width * .1,
+          width: width * .1,
+          child: Image.network(ApiConstants.imageUrl(weather.icon),fit: BoxFit.fill),
         ),
         Text(
           '${(weather.humidity - 32) * 5 ~/ 9} \u2103',

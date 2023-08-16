@@ -30,7 +30,7 @@ class SliverHeaderDelegateComponent extends SliverPersistentHeaderDelegate {
               children: [
                 if (shrinkOffset > expandedHeight + minExtent) // show it on collapse
                   Container(
-                      height: height / 4,
+                      height: height / 5,
                       width: double.infinity,
                       decoration: BoxDecoration(
                           image: DecorationImage(
