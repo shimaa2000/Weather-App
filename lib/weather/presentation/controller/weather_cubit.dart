@@ -86,7 +86,7 @@ class WeatherCubit extends Cubit<WeatherState> {
       });
       result.fold((l) {
         Fluttertoast.showToast(
-            msg: l.message,
+            msg: 'No weather available for current location!',
             toastLength: Toast.LENGTH_SHORT,
             timeInSecForIosWeb: 1,
             backgroundColor: Colors.red,
