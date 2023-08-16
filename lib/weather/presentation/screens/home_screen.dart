@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:weather_app/weather/presentation/screens/current_weather_screen.dart';
 
 import '../../../core/services/network_service.dart';
+import '../../../core/services/services_locator.dart';
+import '../controller/weather_cubit.dart';
 import 'no_internet_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,14 +45,17 @@ class _HomeScreenState extends State<HomeScreen> {
             if (!value) rootContext?.loaderOverlay.show();
           });
           return LoaderOverlay(
-            overlayWidget:const Scaffold(
+            overlayWidget: const Scaffold(
               body: NoInternetScreen(),
             ),
             useDefaultLoading: false,
             child: child!,
           );
         },
-        home: CurrentWeatherScreen(),
+        home: BlocProvider(
+          create: (context) => WeatherCubit(sl(),sl())..getTodayWeather()..getFiveDaysWeather(),
+          child: CurrentWeatherScreen(),
+        ),
       ),
     );
   }

@@ -11,10 +11,12 @@ class WeatherState extends Equatable {
     this.fiveDaysWeatherState = RequestState.initial,
     this.currentPosition,
     this.isEditing = true,
+    this.addressState=AddressState.fetching,
   });
 
   final RequestState getTodayWeatherState;
   final RequestState fiveDaysWeatherState;
+  final AddressState addressState;
   final NetworkState networkState;
   final String message;
   final Weather? weather;
@@ -34,6 +36,7 @@ class WeatherState extends Equatable {
         currentAddress,
         currentPosition,
         isEditing,
+    addressState,
       ];
 
   WeatherState copyWith({
@@ -46,6 +49,7 @@ class WeatherState extends Equatable {
     String? currentAddress,
     Position? currentPosition,
     List<Weather>? fiveDaysWeather,
+    AddressState? addressState,
   }) =>
       WeatherState(
         message: message ?? this.message,
@@ -53,6 +57,7 @@ class WeatherState extends Equatable {
         getTodayWeatherState: getTodayWeatherState ?? this.getTodayWeatherState,
         networkState: networkState ?? this.networkState,
         weather: weather ?? this.weather,
+        addressState: addressState?? this.addressState,
         currentAddress: currentAddress ?? this.currentAddress,
         currentPosition: currentPosition ?? this.currentPosition,
         fiveDaysWeather: fiveDaysWeather ?? this.fiveDaysWeather,

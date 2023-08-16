@@ -1,11 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:weather_app/weather/presentation/components/day_weather.dart';
-import 'package:weather_app/weather/presentation/controller/weather_cubit.dart';
+import '../components/day_weather.dart';
+import '../controller/weather_cubit.dart';
 
 import '../../../core/constants/app_images.dart';
-import '../../../core/services/services_locator.dart';
 import '../../../core/utils/enums.dart';
 import '../components/fade_on_scrolling_widget.dart';
 
@@ -21,6 +21,7 @@ class CurrentWeatherScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         height: height,
+        width: double.infinity,
         decoration: BoxDecoration(
             image: DecorationImage(
           fit: BoxFit.fill,
@@ -28,28 +29,29 @@ class CurrentWeatherScreen extends StatelessWidget {
             AppImages.backgroundImage,
           ),
         )),
-        child: BlocProvider(
-          create: (context) => WeatherCubit(sl(), sl())
-            ..getTodayWeather()
-            ..getFiveDaysWeather(),
-          child: BlocBuilder<WeatherCubit, WeatherState>(
-            buildWhen: (previous, current) =>
-                previous.fiveDaysWeatherState != current.fiveDaysWeatherState,
-            builder: (context, state) {
-              return SafeArea(
-                child: CustomScrollView(
-                  controller: scrollController,
-                  slivers: [
-                    SliverPersistentHeader(
-                      pinned: true,
-                      floating: true,
-                      delegate: SliverHeaderDelegateComponent(expandedHeight: height / 5),
-                    ),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(childCount: state.fiveDaysWeather.length,
-                          (BuildContext context, int index) {
-                        return state.fiveDaysWeatherState == RequestState.loading
-                            ? Padding(
+        child: BlocConsumer<WeatherCubit, WeatherState>(
+         listener: (context, state) {
+
+         },
+          builder: (context, state) {
+            switch(state.addressState){
+              case AddressState.fetching:
+                return const CupertinoActivityIndicator();
+              case AddressState.done:
+                return SafeArea(
+                  child: CustomScrollView(
+                    controller: scrollController,
+                    slivers: [
+                      SliverPersistentHeader(
+                        pinned: true,
+                        floating: true,
+                        delegate: SliverHeaderDelegateComponent(expandedHeight: height / 5),
+                      ),
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(childCount: state.fiveDaysWeather.length,
+                                (BuildContext context, int index) {
+                              return state.fiveDaysWeatherState == RequestState.loading
+                                  ? Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: width * .04,
                                   vertical: height * .01,
@@ -66,16 +68,16 @@ class CurrentWeatherScreen extends StatelessWidget {
                                   ),
                                 ),
                               )
-                            : DayWeather(
+                                  : DayWeather(
                                 weather: state.fiveDaysWeather[index],
                               );
-                      }),
-                    )
-                  ],
-                ),
-              );
-            },
-          ),
+                            }),
+                      )
+                    ],
+                  ),
+                );
+            }
+          },
         ),
       ),
     );
