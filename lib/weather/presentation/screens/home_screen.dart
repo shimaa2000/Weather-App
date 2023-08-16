@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
         home: BlocProvider(
-          create: (context) => WeatherCubit(sl(),sl())..getTodayWeather()..getFiveDaysWeather(),
+          create: (context) => WeatherCubit(sl(),sl())..getAddressFromLatLng(),
           child: CurrentWeatherScreen(),
         ),
       ),

@@ -55,7 +55,7 @@ class WeatherCubit extends Cubit<WeatherState> {
 
   final searchController = TextEditingController();
 
-  Future<String?> _getAddressFromLatLng() async {
+  Future<String?> getAddressFromLatLng() async {
     Position? position = await _getCurrentPosition();
     log('$position');
 
@@ -67,7 +67,10 @@ class WeatherCubit extends Cubit<WeatherState> {
       log('${place.country}');
       CashHelper.saveData(key: 'city', value: placeMarks[0].locality);
       return place.locality;
-    }).whenComplete(() => getTodayWeather());
+    }).whenComplete(() {
+      getTodayWeather();
+      getFiveDaysWeather();
+    });
     emit(state.copyWith(addressState: AddressState.done));
     return placeMarks;
   }
@@ -110,7 +113,7 @@ class WeatherCubit extends Cubit<WeatherState> {
 
   void getFiveDaysWeather() async {
     String? address =
-        CashHelper.getData(key: 'city') ?? await _getAddressFromLatLng();
+        CashHelper.getData(key: 'city') ?? 'Cairo';
 
     emit(state.copyWith(fiveDaysWeatherState: RequestState.loading));
     if (await NetworkService().isConnected) {
