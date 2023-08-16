@@ -17,7 +17,8 @@ class WeatherRemoteDateSource extends BaseWeatherRemoteDateSource {
   @override
   Future<WeatherModel> getWeatherByCityName(Map<String, dynamic> query) async {
     try {
-      final response = await Dio().get(ApiConstants.weatherUrl, queryParameters: query);
+      final response =
+          await Dio().get(ApiConstants.weatherUrl, queryParameters: query);
       if (response.statusCode == 200) {
         return WeatherModel.fromJson(response.data);
       } else {
@@ -27,25 +28,39 @@ class WeatherRemoteDateSource extends BaseWeatherRemoteDateSource {
         );
       }
     } on DioException catch (e) {
-      throw ServerException(errorMessageModel: ErrorMessageModel(
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel(
         statusCode: e.response!.statusCode ?? 400,
         statusMessage: e.message ?? 'please enter valid data',
-        success: false,));    }
+        success: false,
+      ));
+    }
   }
 
   @override
-  Future<List<WeatherModel>> getWeatherForFiveDays(Map<String, dynamic> query) async {
-    final response = await Dio().get(ApiConstants.forecastUrl, queryParameters: query);
-    if (response.statusCode == 200) {
-      return List.from(
-        (response.data['list']).map(
-              (e) => WeatherModel.fromJson(e),
-        ),
-      );
-    } else {
+  Future<List<WeatherModel>> getWeatherForFiveDays(
+      Map<String, dynamic> query) async {
+    try {
+      final response =
+          await Dio().get(ApiConstants.forecastUrl, queryParameters: query);
+      if (response.statusCode == 200) {
+        return List.from(
+          (response.data['list']).map(
+            (e) => WeatherModel.fromJson(e),
+          ),
+        );
+      } else {
+        throw ServerException(
+          errorMessageModel: ErrorMessageModel.fromJson(response.data),
+        );
+      }
+    } on DioException catch (e) {
       throw ServerException(
-        errorMessageModel: ErrorMessageModel.fromJson(response.data),
-      );
+          errorMessageModel: ErrorMessageModel(
+        statusCode: e.response!.statusCode ?? 400,
+        statusMessage: e.message ?? 'please enter valid data',
+        success: false,
+      ));
     }
   }
 }

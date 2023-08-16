@@ -95,6 +95,7 @@ class WeatherCubit extends Cubit<WeatherState> {
         log(l.message);
         emit(state.copyWith(
             getTodayWeatherState: RequestState.error, message: l.message));
+        getTodayWeather(city: 'Cairo');
       }, (r) {
         CashHelper.saveData(key: 'main', value: r.main);
         CashHelper.saveData(key: 'description', value: r.description);
@@ -111,20 +112,20 @@ class WeatherCubit extends Cubit<WeatherState> {
     }
   }
 
-  void getFiveDaysWeather() async {
-    String? address =
-        CashHelper.getData(key: 'city') ?? 'Cairo';
+  void getFiveDaysWeather({String? city}) async {
+    String? address = CashHelper.getData(key: 'city') ?? 'Cairo';
 
     emit(state.copyWith(fiveDaysWeatherState: RequestState.loading));
     if (await NetworkService().isConnected) {
       final result = await _weatherForFiveDays({
-        'q': address ?? 'Cairo',
+        'q': city ?? address ?? 'Cairo',
         'appid': ApiConstants.apiKey,
       });
       result.fold((l) {
         log(l.message);
         emit(state.copyWith(
             fiveDaysWeatherState: RequestState.error, message: l.message));
+        getFiveDaysWeather(city: 'Cairo');
       }, (r) {
         emit(
           state.copyWith(

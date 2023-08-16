@@ -30,13 +30,19 @@ class CurrentWeatherScreen extends StatelessWidget {
           ),
         )),
         child: BlocConsumer<WeatherCubit, WeatherState>(
-         listener: (context, state) {
-
-         },
+          listener: (context, state) {},
           builder: (context, state) {
-            switch(state.addressState){
+            switch (state.addressState) {
               case AddressState.fetching:
-                return const CupertinoActivityIndicator();
+                return state.getTodayWeatherState == RequestState.error
+                    ? Text(
+                        'No Available weather for current Location',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: width * .05,
+                        ),
+                      )
+                    : const CupertinoActivityIndicator();
               case AddressState.done:
                 return SafeArea(
                   child: CustomScrollView(
@@ -45,33 +51,38 @@ class CurrentWeatherScreen extends StatelessWidget {
                       SliverPersistentHeader(
                         pinned: true,
                         floating: true,
-                        delegate: SliverHeaderDelegateComponent(expandedHeight: height / 5),
+                        delegate: SliverHeaderDelegateComponent(
+                            expandedHeight: height / 5),
                       ),
                       SliverList(
-                        delegate: SliverChildBuilderDelegate(childCount: state.fiveDaysWeather.length,
-                                (BuildContext context, int index) {
-                              return state.fiveDaysWeatherState == RequestState.loading
-                                  ? Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: width * .04,
-                                  vertical: height * .01,
-                                ),
-                                child: Shimmer.fromColors(
-                                  baseColor: Colors.blueAccent.withOpacity(.3),
-                                  highlightColor: Colors.blueAccent.shade700,
-                                  child: Container(
-                                    height: height / 5.5,
-                                    decoration: BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.circular(8.0),
+                        delegate: SliverChildBuilderDelegate(
+                            childCount: state.fiveDaysWeather.isEmpty ? 1 : 5,
+                            (BuildContext context, int index) {
+                          return state.fiveDaysWeatherState ==
+                                  RequestState.loading
+                              ? Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: width * .04,
+                                    vertical: height * .01,
+                                  ),
+                                  child: Shimmer.fromColors(
+                                    baseColor:
+                                        Colors.blueAccent.withOpacity(.3),
+                                    highlightColor: Colors.blueAccent.shade700,
+                                    child: Container(
+                                      height: height / 5.5,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              )
-                                  : DayWeather(
-                                weather: state.fiveDaysWeather[index],
-                              );
-                            }),
+                                )
+                              : DayWeather(
+                                  weather: state.fiveDaysWeather[index],
+                                );
+                        }),
                       )
                     ],
                   ),
